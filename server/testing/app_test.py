@@ -1,6 +1,5 @@
 import flask
-
-from app import app
+from app import *
 from models import Article, User
 
 app.secret_key = b'a\xdb\xd2\x13\x93\xc1\xe9\x97\xef2\xe3\x004U\xd1Z'
@@ -45,14 +44,12 @@ class TestApp:
     def test_can_only_access_member_only_article_while_logged_in(self):
         '''allows logged in users to access full member-only articles at /members_only_articles/<int:id>.'''
         with app.test_client() as client:
-            
             client.get('/clear')
 
             user = User.query.first()
             client.post('/login', json={
                 'username': user.username
             })
-
             article_id = Article.query.with_entities(Article.id).first()[0]
 
             response = client.get(f'/members_only_articles/{article_id}')
